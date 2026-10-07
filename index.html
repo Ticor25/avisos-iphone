@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aviso para iPhone</title>
+<style>
+:root{color-scheme:light dark;--bg:#eef3ff;--surface:#fff;--text:#14213d;--muted:#64748b;--accent:#2563eb;--border:#dbe3f0}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1320;--surface:#151d2d;--text:#f1f5f9;--muted:#94a3b8;--accent:#60a5fa;--border:#29364c}}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",system-ui,sans-serif;background:var(--bg);color:var(--text)}
+#app{min-height:100vh;background:var(--bg);padding:48px 22px;display:flex;justify-content:center}
+main{width:min(720px,100%)}.badge{display:inline-block;padding:7px 11px;border:1px solid var(--border);border-radius:999px;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:14px}
+h1{font-size:clamp(32px,6vw,54px);line-height:1.02;margin:0 0 12px;letter-spacing:-1.8px}.sub{color:var(--muted);font-size:16px;margin:0 0 28px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:22px;box-shadow:0 14px 40px rgba(15,23,42,.08)}label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--muted)}
+textarea{width:100%;min-height:145px;resize:vertical;border:1px solid var(--border);border-radius:16px;background:transparent;color:var(--text);padding:15px;font:inherit;font-size:17px;outline:none}textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 20%,transparent)}
+.row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}button{border:0;border-radius:14px;padding:13px 18px;font:inherit;font-weight:750;cursor:pointer}.primary{background:var(--accent);color:white}.secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+.status{margin-top:18px;padding:13px 15px;border-radius:14px;background:color-mix(in srgb,var(--accent) 9%,var(--surface));color:var(--muted);font-size:14px}.history{margin-top:22px}.history h2{font-size:16px}.item{border-top:1px solid var(--border);padding:12px 0;font-size:14px}.time{color:var(--muted);font-size:12px;margin-top:4px}
+.notice{margin-top:24px;font-size:13px;color:var(--muted);line-height:1.5}
+</style></head>
+<body><div id="app"><main>
+<span class="badge">💻 Mac → 📱 iPhone</span>
+<h1>Enviar un aviso</h1>
+<p class="sub">Escribe un aviso para enviarlo al iPhone como notificación web.</p>
+<section class="card">
+<label for="message">MENSAJE</label>
+<textarea id="message" maxlength="500" placeholder="🚨 ¡Ven al Mac!"></textarea>
+<div class="row"><button class="primary" id="send">🔔 Enviar aviso</button><button class="secondary" id="test">Probar en el Mac</button></div>
+<div class="status" id="status">Primero configura esta página como app web en el iPhone y permite las notificaciones.</div>
+<div class="history"><h2>Últimos avisos</h2><div id="history"></div></div>
+</section>
+<p class="notice">No usa iMessage. En el iPhone, abre esta página en Safari, toca Compartir → Agregar a Inicio → activa «Abrir como app web» y permite las notificaciones. Después podrás dejar el iPhone quieto.</p>
+</main></div>
+<script>
+const msg=document.querySelector('#message'),status=document.querySelector('#status'),history=document.querySelector('#history');
+function addHistory(t){const d=document.createElement('div');d.className='item';d.textContent=t;const time=document.createElement('div');time.className='time';time.textContent=new Date().toLocaleString('es-CO');d.appendChild(time);history.prepend(d)}
+document.querySelector('#test').onclick=async()=>{const t=msg.value.trim()||'🚨 ¡Aviso de prueba desde tu Mac!';if('Notification'in window){if(Notification.permission==='default')await Notification.requestPermission();if(Notification.permission==='granted')new Notification('Aviso desde tu Mac',{body:t});else alert(t)}else alert(t);addHistory(t);status.textContent='Prueba realizada en el Mac.'};
+document.querySelector('#send').onclick=()=>{const t=msg.value.trim();if(!t){status.textContent='Escribe un mensaje primero.';msg.focus();return}addHistory(t);if('Notification'in window&&Notification.permission==='granted'){new Notification('Aviso desde tu Mac',{body:t});status.textContent='Aviso enviado como notificación web.'}else{status.textContent='Falta activar las notificaciones en la app web del iPhone.'}};
+</script></body></html>
